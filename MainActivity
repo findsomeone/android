@@ -1,0 +1,155 @@
+package com.test;
+
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+	private PersonManage manage = new PersonManage();
+	private myadapter adapter;
+
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		adapter = new myadapter();
+		this.setContentView(R.layout.activity_main);
+		ListView listView = (ListView) this.findViewById(R.id.main_list);
+		listView.setAdapter(adapter);
+	}
+
+	public void delete_all(View view) {
+		List<Person> deleteperson = new ArrayList<>();
+		for (Person person : manage.findAllpersons()) {
+			if (person.isFlag()) {
+				deleteperson.add(person);
+			}
+		}
+		manage.deleteallperson(deleteperson);
+		adapter.notifyDataSetChanged();
+	}
+
+	boolean ischecked = false;
+
+	public void checked_all(View view) {
+		TextView tv = (TextView) view;
+		if (!ischecked) {
+			for (Person person : manage.findAllpersons()) {
+				person.setFlag(true);
+			}
+			tv.setText("cancel");
+			ischecked = true;
+		} else {
+			for (Person person : manage.findAllpersons()) {
+				person.setFlag(false);
+			}
+			tv.setText("checked_all");
+			ischecked = false;
+		}
+		adapter.notifyDataSetChanged();
+	}
+
+	public class ViewHolder { // 一般来说封装一行上组件的都叫viewholder 作用时缓存当前行上的组件
+		public TextView name;
+		public TextView phone;
+		public LinearLayout linelayout;
+		public CheckBox checkbox;
+		public Button button;
+
+	}
+
+	public class myadapter extends BaseAdapter implements OnClickListener {
+		private List<Person> persons = manage.findAllpersons();
+
+		public myadapter() {
+			// for(int i=0;i<persons.size();i++){
+			// map.put(i, false);
+			// }
+		}
+
+		public int getCount() {
+			return persons.size();
+		}
+
+		public Object getItem(int position) {
+			return null;
+		}
+
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder vh = null;
+			if (convertView == null) { //
+				vh = new ViewHolder();
+				convertView = View.inflate(MainActivity.this, R.layout.list,
+						null);
+				TextView name = (TextView) convertView.findViewById(R.id.name);
+				vh.name = name;
+				TextView phone = (TextView) convertView
+						.findViewById(R.id.phone);
+				vh.phone = phone;
+				CheckBox checkbox = (CheckBox) convertView
+						.findViewById(R.id.checkbox);
+				vh.checkbox = checkbox;
+				vh.checkbox.setTag(position);
+				vh.checkbox.setOnClickListener(this);
+				Button button = (Button) convertView.findViewById(R.id.button);
+				vh.button = button;
+				vh.button.setTag(position);
+				vh.button.setOnClickListener(this);
+				LinearLayout line = (LinearLayout) convertView
+						.findViewById(R.id.linearlayout);
+				vh.linelayout = line;
+				convertView.setTag(vh);
+			} else {
+				vh = (ViewHolder) convertView.getTag();
+			}
+			vh.name.setText(persons.get(position).getName());
+			vh.phone.setText(persons.get(position).getPhone());
+			if (position % 2 == 0) {
+				vh.linelayout.setBackgroundColor(MainActivity.this
+						.getResources().getColor(R.color.lineback1));
+			} else {
+				vh.linelayout.setBackgroundColor(MainActivity.this
+						.getResources().getColor(R.color.lineback2));
+			}
+			vh.checkbox.setTag(position);
+			vh.button.setTag(position);
+			// vh.checkbox.setChecked(map.get(position));
+			vh.checkbox.setChecked(persons.get(position).isFlag());
+
+			return convertView;
+		}
+
+		@Override
+		public void onClick(View v) {
+			Integer i = 0;
+			if (v instanceof CheckBox) { // 如果v属于checkbox
+				CheckBox checkBox = (CheckBox) v;
+				i = (Integer) checkBox.getTag();
+				System.out.println(i);
+				if (checkBox.isChecked()) {
+					persons.get(i).setFlag(true);
+				} else {
+					persons.get(i).setFlag(false);
+				}
+			} else {
+				Button delete = (Button) v;
+				i = (Integer) delete.getTag();
+				manage.deletePerson(persons.get(i).getName());
+				this.notifyDataSetChanged();
+			}
+		}
+	}
+}
