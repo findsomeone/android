@@ -1,0 +1,41 @@
+package com.test;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class PersonManage {
+	private static List<Person> persons;
+	static {
+        persons =new ArrayList<Person>();
+        persons.add(new Person("shabi","12"));
+        persons.add(new Person("wangwu","23"));
+        persons.add(new Person("xiaowu","78"));
+        persons.add(new Person("wanglong","45"));
+        persons.add(new Person("wangzhiquan","29"));
+        persons.add(new Person("wangtianfeng","53"));
+        persons.add(new Person("wangjingwei","23"));
+        persons.add(new Person("wanghaitao","256"));
+        persons.add(new Person("wangxingxing","453"));
+        persons.add(new Person("maozedong","453"));
+        persons.add(new Person("firework","453"));
+        persons.add(new Person("flame","453"));
+	}
+
+	public List<Person> findAllpersons() {
+            return persons;
+	}
+	   public void deleteallperson(List<Person> deleteperson){
+		   persons.removeAll(deleteperson);
+		   
+	   }
+	public void deletePerson(String name) {
+        //想在遍历的时候的删除一个数据 使用迭代器  iterator
+		Iterator<Person> ps=persons.iterator();
+		while(ps.hasNext()){
+			if(ps.next().getName().equals(name)){
+				ps.remove(); //调用迭代器的remove方法
+			}
+		}
+	}
+}
